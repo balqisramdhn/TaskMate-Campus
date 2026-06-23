@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaskMate Campus</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══ LOGIN PAGE ══════════════════════════════════════ -->
+<div class="login-page" id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">📚</div>
+      <h1>Task<span>Mate</span> Campus</h1>
+      <p>Sistem Manajemen Tugas Mahasiswa</p>
+    </div>
+    <div class="form-row">
+      <label>Email / NIM</label>
+      <input type="text" id="loginEmail" placeholder="nim@mahasiswa.uniba.ac.id" />
+      <div class="error-box" id="errEmail">⚠ Email tidak boleh kosong dan harus mengandung @</div>
+    </div>
+    <div class="form-row">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Masukkan password" />
+      <div class="error-box" id="errPass">⚠ Password minimal 6 karakter</div>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Masuk ke Dashboard →</button>
+    <div class="login-footer">
+      Belum punya akun? <a onclick="openRegister()">Daftar sekarang</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REGISTER MODAL ══════════════════════════════════ -->
+<div class="register-modal-overlay" id="registerModal">
+  <div class="register-modal">
+    <div class="modal-header">
+      <div>
+        <div class="register-title">📝 Daftar Akun Baru</div>
+        <div class="register-sub">Isi data di bawah untuk membuat akun TaskMate Campus</div>
+      </div>
+      <button class="modal-close" onclick="closeRegister()">✕</button>
+    </div>
+
+    <div class="form-row">
+      <label>Nama Lengkap *</label>
+      <input type="text" id="regNama" placeholder="Nama lengkap kamu" />
+      <div class="error-box" id="errRegNama">⚠ Nama lengkap tidak boleh kosong!</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-row">
+        <label>NIM</label>
+        <input type="text" id="regNim" placeholder="2021XXXXXX" />
+      </div>
+      <div class="form-row">
+        <label>Semester</label>
+        <input type="text" id="regSemester" placeholder="Contoh: 6" />
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Program Studi</label>
+      <input type="text" id="regProdi" placeholder="Contoh: Teknik Informatika" />
+    </div>
+    <div class="form-row">
+      <label>Email *</label>
+      <input type="email" id="regEmail" placeholder="nim@mahasiswa.uniba.ac.id" />
+      <div class="error-box" id="errRegEmail">⚠ Email harus valid dan mengandung @</div>
+    </div>
+    <div class="form-row">
+      <label>Password *</label>
+      <input type="password" id="regPass" placeholder="Minimal 6 karakter" />
+      <div class="error-box" id="errRegPass">⚠ Password minimal 6 karakter!</div>
+    </div>
+    <div class="form-row">
+      <label>Konfirmasi Password *</label>
+      <input type="password" id="regConfPass" placeholder="Ulangi password" />
+      <div class="error-box" id="errRegConfPass">⚠ Password tidak cocok!</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeRegister()">Batal</button>
+      <button class="btn btn-primary" onclick="doRegister()">🚀 Buat Akun</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST CONTAINER ═════════════════════════════════ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ══ SIDEBAR ═════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <h1>Task<span>Mate</span> 📚</h1>
+    <p>Campus Edition</p>
+  </div>
+  <div class="sidebar-user">
+    <div class="avatar" id="sidebarAvatar">SA</div>
+    <div class="user-info">
+      <p id="sidebarUserName">Siti Aminah</p>
+      <span id="sidebarUserNim">2021110042</span>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nav-label">Menu Utama</div>
+    <div class="nav-item active" onclick="gotoPage('dashboard', this)">
+      <span class="icon">🏠</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="gotoPage('tasks', this)">
+      <span class="icon">✅</span> Daftar Tugas
+      <span class="nav-badge" id="taskBadge">5</span>
+    </div>
+    <div class="nav-item" onclick="gotoPage('calendar', this)">
+      <span class="icon">📅</span> Kalender
+    </div>
+    <div class="nav-item" onclick="gotoPage('report', this)">
+      <span class="icon">📊</span> Laporan
+    </div>
+    <div class="nav-label">Akun</div>
+    <div class="nav-item" onclick="gotoPage('profile', this)">
+      <span class="icon">👤</span> Profil Saya
+    </div>
+    <div class="nav-item" onclick="gotoPage('settings', this)">
+      <span class="icon">⚙️</span> Pengaturan
+    </div>
+  </nav>
+  <div class="sidebar-bottom">
+    <button onclick="doLogout()">🚪 Keluar</button>
+  </div>
+</aside>
+
+<!-- ══ MAIN ════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <h2 id="pageTitle">Dashboard</h2>
+    <div class="topbar-actions">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="globalSearch" placeholder="Cari tugas..." oninput="handleSearch(this.value)" />
+      </div>
+      <div class="notif-btn" title="Notifikasi" onclick="showToast('Kamu punya 3 deadline minggu ini!','warning')">
+        🔔<span class="notif-dot"></span>
+      </div>
+      <button class="btn btn-primary" onclick="openAddTask()">＋ Tugas Baru</button>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD ════════════════════════════════════ -->
+  <div class="page active" id="page-dashboard">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-left">
+        <h2 id="heroBanner">Selamat pagi, Siti! 👋</h2>
+        <p>Kamu punya <strong>5 tugas aktif</strong> dan <strong>2 deadline hari ini</strong></p>
+        <div style="margin-top:14px; display:flex; gap:10px;">
+          <button class="btn btn-outline" style="border-color:rgba(255,255,255,.4);color:white;background:rgba(255,255,255,.1)" onclick="gotoPage('tasks', document.querySelectorAll('.nav-item')[1])">Lihat Semua Tugas</button>
+          <button class="btn" style="background:var(--gold);color:var(--maroon-dark)" onclick="openAddTask()">＋ Tambah Tugas</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="big-num" id="heroEfficiency">87%</div>
+        <p>Efisiensi Minggu Ini</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon maroon">📋</div>
+        <div class="stat-value" id="statTotal">8</div>
+        <div class="stat-label">Total Tugas</div>
+        <div class="stat-change up" id="statTotalChange">↑ +2 minggu ini</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-icon gold">🕐</div>
+        <div class="stat-value" id="statPending">5</div>
+        <div class="stat-label">Belum Selesai</div>
+        <div class="stat-change down">2 deadline hari ini</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value" id="statDone">3</div>
+        <div class="stat-label">Selesai</div>
+        <div class="stat-change up">↑ 37.5% selesai</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-icon orange">🔥</div>
+        <div class="stat-value">2</div>
+        <div class="stat-label">Deadline Dekat</div>
+        <div class="stat-change down">⚠ Segera kerjakan</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <!-- Today's Tasks -->
+      <div class="card">
+        <div class="card-header">
+          <span class="section-title">Tugas Hari Ini</span>
+          <button class="btn btn-ghost btn-sm" onclick="gotoPage('tasks', document.querySelectorAll('.nav-item')[1])">Lihat semua →</button>
+        </div>
+        <div class="card-body" style="padding-top:0" id="todayTaskList"></div>
+      </div>
+
+      <!-- Progress -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="card-header"><span class="section-title">Progress Mata Kuliah</span></div>
+          <div class="card-body">
+            <div class="chart-bar-wrap" id="courseProgress"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span class="section-title">Mini Kalender</span></div>
+          <div class="mini-cal" id="miniCalendarDash"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick settings + activity -->
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span class="section-title">Pengaturan Cepat</span></div>
+        <div class="card-body">
+          <div class="setting-row">
+            <div class="setting-label"><p>Notifikasi Tugas</p><span>Push & email alerts</span></div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label"><p>Pengingat Deadline</p><span>24 jam sebelumnya</span></div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label"><p>Mode Gelap</p><span>Hemat mata</span></div>
+            <button class="toggle" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label"><p>Sinkronisasi Otomatis</p><span>Real-time update</span></div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="section-title">Aktivitas Terbaru</span></div>
+        <div class="card-body" id="activityFeed" style="padding-top:0"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TASKS PAGE ════════════════════════════════════ -->
+  <div class="page" id="page-tasks">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div class="filter-bar" id="taskFilter">
+        <div class="filter-chip active" onclick="filterTasks('all', this)">Semua</div>
+        <div class="filter-chip" onclick="filterTasks('todo', this)">Belum</div>
+        <div class="filter-chip" onclick="filterTasks('inprogress', this)">Dikerjakan</div>
+        <div class="filter-chip" onclick="filterTasks('done', this)">Selesai</div>
+        <div class="filter-chip" onclick="filterTasks('high', this)">🔴 High</div>
+        <div class="filter-chip" onclick="filterTasks('medium', this)">🟡 Medium</div>
+        <div class="filter-chip" onclick="filterTasks('low', this)">🟢 Low</div>
+      </div>
+      <button class="btn btn-primary" onclick="openAddTask()">＋ Tugas Baru</button>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="section-title" id="taskListTitle">Semua Tugas (8)</span>
+        <span style="font-size:12px;color:var(--gray-400)">Klik ✓ untuk tandai selesai</span>
+      </div>
+      <div class="card-body" style="padding-top:0" id="fullTaskList"></div>
+    </div>
+  </div>
+
+  <!-- ══ CALENDAR PAGE ════════════════════════════════ -->
+  <div class="page" id="page-calendar">
+    <div class="two-col">
+      <div class="card" style="grid-column:1/-1">
+        <div class="card-header"><span class="section-title">Kalender Akademik</span></div>
+        <div class="card-body">
+          <div id="bigCalendar"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="section-title">Tugas Bulan Ini</span></div>
+      <div class="card-body" style="padding-top:0" id="calTaskList"></div>
+    </div>
+  </div>
+
+  <!-- ══ REPORT PAGE ══════════════════════════════════ -->
+  <div class="page" id="page-report">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon maroon">📝</div>
+        <div class="stat-value">8</div>
+        <div class="stat-label">Total Tugas</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-value" id="rptDone">3</div>
+        <div class="stat-label">Selesai</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-icon gold">⏳</div>
+        <div class="stat-value" id="rptPending">5</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-icon orange">📈</div>
+        <div class="stat-value" id="rptPct">37%</div>
+        <div class="stat-label">Completion Rate</div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span class="section-title">Progress per Mata Kuliah</span></div>
+        <div class="card-body">
+          <div class="chart-bar-wrap" id="reportCourseBar"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="section-title">Progress per Prioritas</span></div>
+        <div class="card-body">
+          <div class="chart-bar-wrap" id="reportPriorityBar"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="section-title">Ringkasan Mingguan</span></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center">
+          <div style="font-size:11px;color:var(--gray-400)">Sen</div>
+          <div style="font-size:11px;color:var(--gray-400)">Sel</div>
+          <div style="font-size:11px;color:var(--gray-400)">Rab</div>
+          <div style="font-size:11px;color:var(--gray-400)">Kam</div>
+          <div style="font-size:11px;color:var(--gray-400)">Jum</div>
+          <div style="font-size:11px;color:var(--gray-400)">Sab</div>
+          <div style="font-size:11px;color:var(--gray-400)">Min</div>
+          <div style="background:var(--maroon-pale);border-radius:6px;padding:10px 4px"><div style="font-size:16px;font-weight:700;color:var(--maroon)">2</div><div style="font-size:10px;color:var(--gray-400)">tugas</div></div>
+          <div style="background:var(--maroon-pale);border-radius:6px;padding:10px 4px"><div style="font-size:16px;font-weight:700;color:var(--maroon)">1</div><div style="font-size:10px;color:var(--gray-400)">tugas</div></div>
+          <div style="background:var(--maroon-pale);border-radius:6px;padding:10px 4px"><div style="font-size:16px;font-weight:700;color:var(--maroon)">3</div><div style="font-size:10px;color:var(--gray-400)">tugas</div></div>
+          <div style="background:var(--gray-100);border-radius:6px;padding:10px 4px"><div style="font-size:16px;font-weight:700;color:var(--gray-300)">0</div><div style="font-size:10px;color:var(--gray-400)">tugas</div></div>
+          <div style="background:var(--maroon-pale);border-radius:6px;padding:10px 4px"><div style="font-size:16px;font-weight:700;color:var(--maroon)">2</div><div style="font-size:10px;color:var(--gray-400)">tugas</div></div>
+          <div style="background:var(--maroon-pale);border-radius:6px;padding:10px 4px"><div style="font-size:16px;font-weight:700;color:var(--maroon)">1</div><div style="font-size:10px;color:var(--gray-400)">tugas</div></div>
+          <div style="background:var(--gray-100);border-radius:6px;padding:10px 4px"><div style="font-size:16px;font-weight:700;color:var(--gray-300)">0</div><div style="font-size:10px;color:var(--gray-400)">tugas</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROFILE PAGE ══════════════════════════════════ -->
+  <div class="page" id="page-profile">
+    <div class="profile-header-card">
+      <div class="profile-avatar-big" id="profileAvatarBig">SA</div>
+      <div class="profile-info">
+        <h2 id="profileName">Siti Aminah</h2>
+        <p id="profileSubtitle">2021110042 · Teknik Informatika · Semester 6</p>
+        <div class="profile-badges">
+          <span class="profile-badge">Mahasiswa Aktif</span>
+          <span class="profile-badge gold">⭐ Top Performer</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span class="section-title">Informasi Akademik</span></div>
+        <div class="card-body">
+          <div class="form-row"><label>Nama Lengkap</label><input type="text" id="inputNamaLengkap" value="Siti Aminah" /></div>
+          <div class="form-row"><label>NIM</label><input type="text" id="inputNIM" value="2021110042" /></div>
+          <div class="form-row"><label>Program Studi</label><input type="text" id="inputProdi" value="Teknik Informatika" /></div>
+          <div class="form-row"><label>Semester</label><input type="text" id="inputSemester" value="6" /></div>
+          <div class="form-row"><label>Email</label><input type="email" id="inputEmail" value="siti@mahasiswa.uniba.ac.id" /></div>
+          <button class="btn btn-primary" onclick="saveProfile()">💾 Simpan Perubahan</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="section-title">Statistik Kamu</span></div>
+        <div class="card-body">
+          <div class="progress-wrap" style="margin-bottom:16px">
+            <div class="progress-label"><span>Tugas Selesai</span><span>3 / 8</span></div>
+            <div class="progress-bar"><div class="progress-fill" style="width:37%"></div></div>
+          </div>
+          <div class="progress-wrap" style="margin-bottom:16px">
+            <div class="progress-label"><span>Efisiensi Mingguan</span><span>87%</span></div>
+            <div class="progress-bar"><div class="progress-fill gold" style="width:87%"></div></div>
+          </div>
+          <div class="progress-wrap" style="margin-bottom:16px">
+            <div class="progress-label"><span>IMK Progress</span><span>60%</span></div>
+            <div class="progress-bar"><div class="progress-fill green" style="width:60%"></div></div>
+          </div>
+          <div style="margin-top:20px;padding:14px;background:var(--maroon-pale);border-radius:var(--radius-sm);text-align:center">
+            <div style="font-family:'Sora',sans-serif;font-size:28px;color:var(--maroon);font-weight:700">3.78</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px">IPK Semester Ini</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SETTINGS PAGE ════════════════════════════════ -->
+  <div class="page" id="page-settings">
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header"><span class="section-title">Notifikasi</span></div>
+        <div class="card-body">
+          <div class="setting-row">
+            <div class="setting-label"><p>Notifikasi Deadline</p><span>H-1 sebelum deadline</span></div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label"><p>Email Reminder</p><span>Setiap hari Senin</span></div>
+            <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label"><p>Push Notification</p><span>Browser alerts</span></div>
+            <button class="toggle" onclick="this.classList.toggle('on')"></button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="section-title">Tampilan</span></div>
+        <div class="card-body">
+          <div class="setting-row">
+            <div class="setting-label"><p>Mode Gelap</p><span>Dark theme</span></div>
+            <button class="toggle" onclick="toggleDarkMode()"></button>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label"><p>Bahasa</p><span>Bahasa Indonesia</span></div>
+            <select style="padding:6px 10px;border:1.5px solid var(--gray-200);border-radius:6px;font-size:13px;font-family:inherit">
+              <option>Bahasa Indonesia</option>
+              <option>English</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="section-title">Ubah Password</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <label>Password Lama</label>
+            <input type="password" id="oldPass" placeholder="Masukkan password lama" />
+            <div class="error-box" id="errOldPass">⚠ Password lama salah!</div>
+          </div>
+          <div class="form-row">
+            <label>Password Baru</label>
+            <input type="password" id="newPass" placeholder="Min 8 karakter" />
+            <div class="error-box" id="errNewPass">⚠ Password baru minimal 8 karakter!</div>
+          </div>
+          <div class="form-row">
+            <label>Konfirmasi Password</label>
+            <input type="password" id="confPass" placeholder="Ulangi password baru" />
+            <div class="error-box" id="errPassMatch">⚠ Password baru tidak cocok!</div>
+          </div>
+          <button class="btn btn-primary" onclick="changePassword()">🔐 Simpan Password</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="section-title">Zona Bahaya</span></div>
+        <div class="card-body">
+          <p style="font-size:13px;color:var(--gray-600);margin-bottom:12px">Tindakan berikut tidak dapat dibatalkan.</p>
+          <button class="btn btn-danger btn-sm" onclick="showToast('Fitur ini memerlukan konfirmasi admin','warning')">🗑 Hapus Akun</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══ MODAL ADD / EDIT TASK ════════════════════════════ -->
+<div class="modal-overlay" id="addTaskModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">➕ Tambah Tugas Baru</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-row">
+      <label>Nama Tugas *</label>
+      <input type="text" id="taskName" placeholder="Contoh: UTS Pemrograman Web" />
+      <div class="error-box" id="errTaskName">⚠ Nama tugas tidak boleh kosong!</div>
+    </div>
+    <div class="form-row">
+      <label>Mata Kuliah</label>
+      <select id="taskCourse">
+        <option value="">-- Pilih Mata Kuliah --</option>
+        <option>IMK (Interaksi Manusia Komputer)</option>
+        <option>Pemrograman Web</option>
+        <option>Basis Data Lanjut</option>
+        <option>Jaringan Komputer</option>
+        <option>Kecerdasan Buatan</option>
+        <option>Skripsi</option>
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-row">
+        <label>Prioritas</label>
+        <select id="taskPriority">
+          <option value="high">🔴 Tinggi</option>
+          <option value="medium" selected>🟡 Sedang</option>
+          <option value="low">🟢 Rendah</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Status</label>
+        <select id="taskStatus">
+          <option value="todo">Belum Dikerjakan</option>
+          <option value="inprogress">Sedang Dikerjakan</option>
+          <option value="done">Selesai</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Deadline *</label>
+      <input type="date" id="taskDeadline" />
+      <div class="error-box" id="errDeadline">⚠ Deadline harus diisi!</div>
+    </div>
+    <div class="form-row">
+      <label>Catatan</label>
+      <textarea id="taskNote" placeholder="Tambahkan catatan atau deskripsi tugas..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Batal</button>
+      <button class="btn btn-primary" onclick="saveTask()">Simpan Tugas</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
